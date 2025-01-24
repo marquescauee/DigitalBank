@@ -1,30 +1,30 @@
-import type { Metadata } from "next";
-import { Inter, IBM_Plex_Serif } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Inter, IBM_Plex_Serif } from 'next/font/google'
+import './globals.css'
 
 const ibmPlexSerif = IBM_Plex_Serif({
-  variable: "--font-ibm-plex-serif",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
+  variable: '--font-ibm-plex-serif',
+  subsets: ['latin'],
+  weight: ['400', '700'],
+})
 
 const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+  variable: '--font-inter',
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
-  title: "Digital Bank",
-  description: "Welcome to the most modern digital bank ever!",
+  title: 'Digital Bank',
+  description: 'Welcome to the most modern digital bank ever!',
   icons: {
-    icon: "/icons/logo.svg",
+    icon: '/icons/logo.svg',
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
@@ -34,5 +34,5 @@ export default function RootLayout({
         {children}
       </body>
     </html>
-  );
+  )
 }
