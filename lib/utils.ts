@@ -228,19 +228,34 @@ export const authFormSchema = (type: string) =>
         : z.string().length(2, {
             message: 'State must have exactly 2 characters',
           }),
-    postalCode:
+    postalCode: type === 'sign-in' ? z.string().optional() : z.string(),
+    dateOfBirth:
       type === 'sign-in'
         ? z.string().optional()
-        : z.string().length(8, {
-            message: 'Postal code must have exactly 8 numbers',
-          }),
-    dateOfBirth: type === 'sign-in' ? z.string().optional() : z.string().min(3),
-    ssn:
-      type === 'sign-in'
-        ? z.string().optional()
-        : z.string().length(11, {
-            message: 'Field must have exactly 11 numbers',
-          }),
+        : z
+            .string()
+            .min(3)
+            .regex(/^\d{2}-\d{2}-\d{4}$/, {
+              message: 'Date must be in the format DD-MM-YYYY',
+            })
+            .refine(
+              (date) => {
+                const [day, month, year] = date.split('/').map(Number)
+
+                if (year < 1900 || year > new Date().getFullYear()) return false
+                if (month < 1 || month > 12) return false
+                if (day < 1 || day > 31) return false
+
+                const daysInMonth = new Date(year, month, 0).getDate()
+                if (day > daysInMonth) return false
+
+                return true
+              },
+              {
+                message: 'Invalid date',
+              },
+            ),
+    ssn: type === 'sign-in' ? z.string().optional() : z.string(),
 
     // both
     email: z.string().email(),

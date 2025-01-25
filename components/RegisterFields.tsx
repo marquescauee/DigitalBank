@@ -3,6 +3,9 @@ import CustomInput from './CustomInput'
 import { Control } from 'react-hook-form'
 import { z } from 'zod'
 import { authFormSchema } from '@/lib/utils'
+import { applyCepMask } from '@/utils/form/applyPostalCodeMask'
+import { applySSNMask } from '@/utils/form/applySSNMask'
+import { applyDateMask } from '@/utils/form/applyDateMask'
 
 const formSchema = authFormSchema('sign-up')
 
@@ -57,7 +60,7 @@ const RegisterFields = ({ control }: RegisterFieldsProps) => {
           name="state"
           label="State"
           id="state"
-          inputPlaceholder="ex: CA"
+          inputPlaceholder="Ex: CA"
           type="text"
           key="state"
         />
@@ -66,9 +69,10 @@ const RegisterFields = ({ control }: RegisterFieldsProps) => {
           name="postalCode"
           label="Postal Code"
           id="postalCode"
-          inputPlaceholder="ex: 11101"
+          inputPlaceholder="Ex: 00000-000"
           type="text"
           key="postalCode"
+          mask={applyCepMask}
         />
       </div>
       <div className="flex gap-4">
@@ -77,18 +81,20 @@ const RegisterFields = ({ control }: RegisterFieldsProps) => {
           name="dateOfBirth"
           label="Date of Birth"
           id="dob"
-          inputPlaceholder="dd-mm-yyyy"
+          inputPlaceholder="Ex: DD-MM-YYYY"
           type="text"
           key="dob"
+          mask={applyDateMask}
         />
         <CustomInput
           control={control}
           name="ssn"
           label="Social Security Number"
           id="ssn"
-          inputPlaceholder="Example: 8888"
+          inputPlaceholder="Ex: XXX.XXX.XXX-XX"
           type="text"
           key="ssn"
+          mask={applySSNMask}
         />
       </div>
     </>

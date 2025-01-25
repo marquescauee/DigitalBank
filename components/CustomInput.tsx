@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { FormField, FormLabel, FormControl, FormMessage } from './ui/form'
 import { Input } from './ui/input'
-import { Control, FieldPath, Form } from 'react-hook-form'
+import { Control, FieldPath } from 'react-hook-form'
+import InputMask from 'react-input-mask-next'
 import { z } from 'zod'
 import { authFormSchema } from '@/lib/utils'
 
@@ -15,6 +16,13 @@ interface CustomInputProps {
   type: string
   id: string
   autocomplete?: string
+  mask?: (
+    value: string,
+    cursorPosition: number,
+  ) => {
+    maskedValue: string
+    newCursorPosition: number
+  }
 }
 
 const CustomInput = ({
@@ -25,7 +33,10 @@ const CustomInput = ({
   id,
   type,
   autocomplete,
+  mask,
 }: CustomInputProps) => {
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
   return (
     <FormField
       control={control}
@@ -36,13 +47,35 @@ const CustomInput = ({
           <div className="flex w-full flex-col">
             <FormControl>
               <Input
+                ref={inputRef}
                 autoComplete={autocomplete}
                 placeholder={inputPlaceholder}
                 className="input-class"
                 type={type}
                 id={id}
-                {...field}
                 value={field.value || ''}
+                onChange={(e) => {
+                  if (mask) {
+                    const cursorPosition = e.target.selectionStart || 0
+                    const { maskedValue, newCursorPosition } = mask(
+                      e.target.value,
+                      cursorPosition,
+                    )
+
+                    field.onChange(maskedValue)
+
+                    setTimeout(() => {
+                      if (inputRef.current) {
+                        inputRef.current.setSelectionRange(
+                          newCursorPosition,
+                          newCursorPosition,
+                        )
+                      }
+                    }, 0)
+                  } else {
+                    field.onChange(e.target.value)
+                  }
+                }}
               />
             </FormControl>
             <FormMessage className="form-message mt-2" />
