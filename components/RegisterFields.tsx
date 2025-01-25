@@ -42,6 +42,15 @@ const RegisterFields = ({ control }: RegisterFieldsProps) => {
         type="text"
         key="address"
       />
+      <CustomInput
+        control={control}
+        name="city"
+        label="City"
+        id="city"
+        inputPlaceholder="Enter your city"
+        type="text"
+        key="city"
+      />
       <div className="flex gap-4">
         <CustomInput
           control={control}
