@@ -356,3 +356,7 @@ declare interface PasswordFeedbackProps {
     hasSpecialChar: boolean
   }
 }
+
+declare interface Exception {
+  message: string
+}

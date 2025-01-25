@@ -13,10 +13,14 @@ import PasswordFeedback from './PasswordFeedback'
 import { authFormSchema } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import RegisterFields from './RegisterFields'
+import axios from 'axios'
 
 const AuthForm = ({ type }: { type: string }) => {
   const [user, setUser] = useState<LoginUser | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  // TODO - Toast de erro
+  const [error, setError] = useState<Exception | null>(null)
 
   const [passwordValid, setPasswordValid] = useState<boolean>(false)
 
@@ -32,8 +36,20 @@ const AuthForm = ({ type }: { type: string }) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true)
-    console.log('values', values)
-    setIsLoading(false)
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/register`,
+        {
+          values,
+        },
+      )
+    } catch (error) {
+      const errorMessage = error as Exception
+      setError(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const emailError = form.formState.errors.email
