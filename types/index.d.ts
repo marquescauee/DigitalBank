@@ -332,3 +332,27 @@ declare interface getBankByAccountIdProps {
 declare interface AnimatedCounterProps {
   amount: number
 }
+
+declare interface CustomInputProps {
+  form: UseFormReturn<
+    {
+      email: string
+    },
+    any,
+    undefined
+  >
+  name: string
+  label: string
+  inputPlaceholder: string
+  type: string
+}
+
+declare interface PasswordFeedbackProps {
+  validation: {
+    minLength: boolean
+    hasUppercase: boolean
+    hasLowercase: boolean
+    hasNumber: boolean
+    hasSpecialChar: boolean
+  }
+}

@@ -198,17 +198,36 @@ export const getTransactionStatus = (date: Date) => {
 export const authFormSchema = (type: string) =>
   z.object({
     // sign up
-    firstName: type === 'sign-in' ? z.string().optional() : z.string().min(3),
-    lastName: type === 'sign-in' ? z.string().optional() : z.string().min(3),
-    address1: type === 'sign-in' ? z.string().optional() : z.string().max(50),
-    city: type === 'sign-in' ? z.string().optional() : z.string().max(50),
+    firstName:
+      type === 'sign-in'
+        ? z.string().optional()
+        : z.string().min(2, {
+            message: 'First name must have at least 2 characters',
+          }),
+    lastName:
+      type === 'sign-in'
+        ? z.string().optional()
+        : z.string().min(2, {
+            message: 'Last name must have at least 2 characters',
+          }),
+    address: type === 'sign-in' ? z.string().optional() : z.string().max(50),
     state:
       type === 'sign-in' ? z.string().optional() : z.string().min(2).max(2),
     postalCode:
-      type === 'sign-in' ? z.string().optional() : z.string().min(3).max(6),
+      type === 'sign-in'
+        ? z.string().optional()
+        : z.string().length(8, {
+            message: 'Postal code must have 8 numbers',
+          }),
     dateOfBirth: type === 'sign-in' ? z.string().optional() : z.string().min(3),
-    ssn: type === 'sign-in' ? z.string().optional() : z.string().min(3),
+    ssn:
+      type === 'sign-in'
+        ? z.string().optional()
+        : z.string().length(11, {
+            message: 'Field must have 11 numbers',
+          }),
+
     // both
     email: z.string().email(),
-    password: z.string().min(8),
+    password: z.string(),
   })
