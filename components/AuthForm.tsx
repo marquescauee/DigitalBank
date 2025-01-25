@@ -40,7 +40,7 @@ const AuthForm = ({ type }: { type: string }) => {
   const isEmailValid = form.watch('email') && !emailError
   const formPassword = form.watch('password')
 
-  const validation = {
+  const passwordValidation = {
     minLength: formPassword.length >= 8,
     hasUppercase: /[A-Z]/.test(formPassword),
     hasLowercase: /[a-z]/.test(formPassword),
@@ -49,7 +49,7 @@ const AuthForm = ({ type }: { type: string }) => {
   }
 
   useEffect(() => {
-    const isValidPassword = Object.values(validation).every(Boolean)
+    const isValidPassword = Object.values(passwordValidation).every(Boolean)
     setPasswordValid(isValidPassword)
   }, [formPassword])
 
@@ -113,7 +113,7 @@ const AuthForm = ({ type }: { type: string }) => {
                   key="password"
                   autocomplete="current-password"
                 />
-                <PasswordFeedback validation={validation} />
+                <PasswordFeedback passwordValidation={passwordValidation} />
               </div>
               <div className="flex flex-col gap-4">
                 <Button

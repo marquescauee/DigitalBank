@@ -348,7 +348,7 @@ declare interface CustomInputProps {
 }
 
 declare interface PasswordFeedbackProps {
-  validation: {
+  passwordValidation: {
     minLength: boolean
     hasUppercase: boolean
     hasLowercase: boolean
