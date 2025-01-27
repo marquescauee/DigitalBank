@@ -234,9 +234,8 @@ export const authFormSchema = (type: string) =>
         ? z.string().optional()
         : z
             .string()
-            .min(3)
             .regex(/^\d{2}\/\d{2}\/\d{4}$/, {
-              message: 'Date must be in the format DD-MM-YYYY',
+              message: 'Date must be in the format DD/MM/YYYY',
             })
             .refine(
               (date) => {
