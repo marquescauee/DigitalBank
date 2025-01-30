@@ -32,6 +32,45 @@ export const login = async (values: AuthUserData): Promise<ApiResponse> => {
         email: values.email,
         password: values.password,
       },
+      {
+        withCredentials: true,
+      },
+    )
+
+    return {
+      message: response.data.message,
+      statusCode: response.data.statusCode,
+    }
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+export const validateToken = async (): Promise<ApiResponse> => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/validate-token`,
+      {
+        withCredentials: true,
+      },
+    )
+
+    return {
+      message: response.data.message,
+      statusCode: response.data.statusCode,
+    }
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+export const refreshToken = async (): Promise<ApiResponse> => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/refresh-token`,
+      {
+        withCredentials: true,
+      },
     )
 
     return {

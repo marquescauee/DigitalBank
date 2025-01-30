@@ -43,7 +43,6 @@ const AuthForm = ({ type }: { type: 'sign-up' | 'sign-in' }) => {
       const signUp = await handleSignUp({ values })
 
       if (signUp.error) {
-        console.log(signUp.error)
         toast.error(signUp.error, {
           position: 'bottom-right',
           autoClose: 5000,

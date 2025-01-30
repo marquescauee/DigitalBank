@@ -95,12 +95,14 @@ export class AuthService {
 
       response.cookie('accessToken', accessToken, {
         httpOnly: true,
+        secure: false,
         sameSite: 'lax',
         maxAge: 15 * 60 * 1000,
       })
 
       return response.status(HttpStatus.OK).json({
         message: 'Token refreshed successfully',
+        statusCode: HttpStatus.OK,
       })
     } catch (error) {
       console.error(error)
@@ -108,11 +110,12 @@ export class AuthService {
       if (error instanceof UnauthorizedException) {
         return response
           .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: error.message })
+          .json({ message: error.message, statusCode: HttpStatus.UNAUTHORIZED })
       }
 
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'An unexpected error occurred',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       })
     }
   }
@@ -136,18 +139,22 @@ export class AuthService {
         throw new UnauthorizedException('Invalid access token')
       }
 
-      return response.status(HttpStatus.OK).json('Successfully validated')
+      return response.status(HttpStatus.OK).json({
+        message: 'Successfully validated',
+        statusCode: HttpStatus.OK,
+      })
     } catch (error) {
       console.error('Access token validation error:', error)
 
       if (error instanceof UnauthorizedException) {
         return response
           .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: error.message })
+          .json({ message: error.message, statusCode: HttpStatus.UNAUTHORIZED })
       }
 
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'An unexpected error occurred',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       })
     }
   }
@@ -156,9 +163,10 @@ export class AuthService {
     response.cookie('accessToken', '', { maxAge: 0 })
     response.cookie('refreshToken', '', { maxAge: 0 })
 
-    return response
-      .status(HttpStatus.OK)
-      .send({ message: 'user logged out successfully' })
+    return response.status(HttpStatus.OK).json({
+      message: 'user logged out successfully',
+      statusCode: HttpStatus.OK,
+    })
   }
 
   generateUserTokens(email: string, id: string, response: Response) {
@@ -170,20 +178,21 @@ export class AuthService {
 
     response.cookie('accessToken', accessToken, {
       httpOnly: true,
+      secure: false,
       sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     })
 
     response.cookie('refreshToken', refreshToken, {
       httpOnly: true,
+      secure: false,
       sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000,
     })
 
     return response.status(HttpStatus.OK).json({
       message: 'Login Success',
-      accessToken: accessToken,
-      refreshToken: refreshToken,
+      statusCode: HttpStatus.OK,
     })
   }
 }
