@@ -4,7 +4,7 @@ import MobileNav from '@/components/MobileNav'
 import Sidebar from '@/components/Sidebar'
 import { refreshToken, validateToken } from '@/routes/auth'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function RootLayout({
@@ -29,6 +29,7 @@ export default function RootLayout({
     ssn: '123-45-6789',
   }
 
+  const pathname = usePathname()
   const route = useRouter()
   const [isLogged, setIsLogged] = useState<boolean>(false)
 
@@ -56,7 +57,7 @@ export default function RootLayout({
 
   useEffect(() => {
     authenticateUser()
-  }, [route])
+  }, [pathname])
 
   if (isLogged) {
     return (
