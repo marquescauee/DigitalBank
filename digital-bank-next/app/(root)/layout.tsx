@@ -2,7 +2,7 @@
 
 import MobileNav from '@/components/MobileNav'
 import Sidebar from '@/components/Sidebar'
-import { refreshToken, validateToken } from '@/routes/auth'
+import { logout, refreshToken, validateToken } from '@/routes/auth'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -41,17 +41,17 @@ export default function RootLayout({
       return
     }
 
-    if (validToken.error) {
-      const refreshedToken = await refreshToken()
+    const refreshedToken = await refreshToken()
 
-      if (refreshedToken.statusCode === 200) {
-        setIsLogged(true)
-        return
-      }
+    if (refreshedToken.statusCode === 200) {
+      setIsLogged(true)
+      return
+    }
 
-      if (refreshedToken.error) {
-        route.push('/sign-in')
-      }
+    if (refreshedToken.error) {
+      await logout()
+
+      route.push('/sign-in')
     }
   }
 

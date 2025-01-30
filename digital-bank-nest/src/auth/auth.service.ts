@@ -12,7 +12,7 @@ import * as bcrypt from 'bcrypt'
 import { HttpStatus } from '@nestjs/common'
 import { SignInDTO } from './dtos/signin.dto'
 import { unauthorizedException } from 'messages/errors/unauthorized'
-import { JwtService } from '@nestjs/jwt'
+import { JsonWebTokenError, JwtService } from '@nestjs/jwt'
 import { Response } from 'express'
 import { ConfigService } from '@nestjs/config'
 
@@ -113,6 +113,32 @@ export class AuthService {
           .json({ message: error.message, statusCode: HttpStatus.UNAUTHORIZED })
       }
 
+      if (
+        error instanceof JsonWebTokenError &&
+        error.message === 'jwt malformed'
+      ) {
+        return response.status(HttpStatus.UNAUTHORIZED).json({
+          message: 'The provided refresh token is malformed.',
+          statusCode: HttpStatus.UNAUTHORIZED,
+        })
+      }
+
+      if (error instanceof Error) {
+        if (error.name === 'JsonWebTokenError') {
+          console.error('Access token validation error:', error.message)
+          return response.status(HttpStatus.UNAUTHORIZED).json({
+            message: error.message,
+            statusCode: HttpStatus.UNAUTHORIZED,
+          })
+        }
+
+        console.error('Refresh token expired:', error.message)
+        return response.status(HttpStatus.UNAUTHORIZED).json({
+          message: error.message,
+          statusCode: HttpStatus.UNAUTHORIZED,
+        })
+      }
+
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'An unexpected error occurred',
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -144,12 +170,36 @@ export class AuthService {
         statusCode: HttpStatus.OK,
       })
     } catch (error) {
-      console.error('Access token validation error:', error)
+      console.error(error)
 
       if (error instanceof UnauthorizedException) {
         return response
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: error.message, statusCode: HttpStatus.UNAUTHORIZED })
+      }
+
+      if (
+        error instanceof JsonWebTokenError &&
+        error.message === 'jwt malformed'
+      ) {
+        return response.status(HttpStatus.UNAUTHORIZED).json({
+          message: 'The provided refresh token is malformed.',
+          statusCode: HttpStatus.UNAUTHORIZED,
+        })
+      }
+
+      if (error instanceof Error) {
+        if (error.name === 'JsonWebTokenError') {
+          return response.status(HttpStatus.UNAUTHORIZED).json({
+            message: error.message,
+            statusCode: HttpStatus.UNAUTHORIZED,
+          })
+        }
+
+        return response.status(HttpStatus.UNAUTHORIZED).json({
+          message: error.message,
+          statusCode: HttpStatus.UNAUTHORIZED,
+        })
       }
 
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

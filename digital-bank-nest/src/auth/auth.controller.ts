@@ -36,7 +36,7 @@ export class AuthController {
     return this.authService.validateAccessToken(accessToken, response)
   }
 
-  @Post('/logout')
+  @Get('/logout')
   logout(@Res() response: Response) {
     return this.authService.logout(response)
   }

@@ -81,3 +81,21 @@ export const refreshToken = async (): Promise<ApiResponse> => {
     return handleError(error)
   }
 }
+
+export const logout = async (): Promise<ApiResponse> => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/logout`,
+      {
+        withCredentials: true,
+      },
+    )
+
+    return {
+      message: response.data.message,
+      statusCode: response.data.statusCode,
+    }
+  } catch (error) {
+    return handleError(error)
+  }
+}
