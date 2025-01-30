@@ -64,7 +64,7 @@ export class SignUpDTO {
   @Length(8, 8, {
     message: 'Postal code must have exactly 8 characters',
   })
-  @Matches(/^\d{8}$/, {
+  @Matches(/^\d+$/, {
     message: 'Postal code must only contain numbers and no special characters',
   })
   postalCode: string

@@ -66,7 +66,7 @@ export class AuthService {
     return this.generateUserTokens(user.email, user.id, response)
   }
 
-  async refreshUser(request: RequestWithCookies, response: Response) {
+  async refreshToken(request: RequestWithCookies, response: Response) {
     try {
       const refreshToken = request.cookies['refreshToken']
 
@@ -104,6 +104,41 @@ export class AuthService {
       })
     } catch (error) {
       console.error(error)
+
+      if (error instanceof UnauthorizedException) {
+        return response
+          .status(HttpStatus.UNAUTHORIZED)
+          .json({ message: error.message })
+      }
+
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'An unexpected error occurred',
+      })
+    }
+  }
+
+  async validateAccessToken(accessToken: string, response: Response) {
+    try {
+      if (!accessToken) {
+        throw new UnauthorizedException('Access token is missing')
+      }
+
+      const secretKey = this.configService.get<string>('JWT_SECRET')
+
+      if (!secretKey) {
+        console.error('Environment not configured correctly')
+        throw new InternalServerErrorException()
+      }
+
+      const payload: JwtPayload = await this.jwtService.verifyAsync(accessToken)
+
+      if (!payload) {
+        throw new UnauthorizedException('Invalid access token')
+      }
+
+      return response.status(HttpStatus.OK).json('Successfully validated')
+    } catch (error) {
+      console.error('Access token validation error:', error)
 
       if (error instanceof UnauthorizedException) {
         return response

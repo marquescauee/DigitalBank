@@ -1,10 +1,11 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common'
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { SignUpDTO } from './dtos/signup.dto'
 import { SignInDTO } from './dtos/signin.dto'
-import { Response } from 'express'
+import { Response, Request } from 'express'
 
-@Controller()
+@Controller('/api')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -18,12 +19,22 @@ export class AuthController {
     return await this.authService.signIn(signInData, response)
   }
 
-  @Post('/refresh-user')
-  async refreshUser(
+  @Get('/refresh-token')
+  async refreshToken(
     @Req() request: RequestWithCookies,
     @Res() response: Response,
   ) {
-    return this.authService.refreshUser(request, response)
+    return this.authService.refreshToken(request, response)
+  }
+
+  @Get('/validate-token')
+  async validateToken(@Req() request: Request, @Res() response: Response) {
+    console.log(request.cookies)
+
+    return this.authService.validateAccessToken(
+      request.cookies.accessToken,
+      response,
+    )
   }
 
   @Post('/logout')
