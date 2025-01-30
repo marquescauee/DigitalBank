@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, IBM_Plex_Serif } from 'next/font/google'
 import './globals.css'
-import ToastProvider from '@/contexts/ToastProvider'
+import ToastProvider from '@/contexts/ToastContext'
 
 const ibmPlexSerif = IBM_Plex_Serif({
   variable: '--font-ibm-plex-serif',

@@ -182,6 +182,8 @@ export class AuthService {
 
     return response.status(HttpStatus.OK).json({
       message: 'Login Success',
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     })
   }
 }

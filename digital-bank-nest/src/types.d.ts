@@ -5,3 +5,7 @@ declare interface RequestWithCookies extends Request {
 declare interface JwtPayload {
   id: string
 }
+
+declare interface TokenRequest {
+  accessToken: string
+}

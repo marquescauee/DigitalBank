@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
+import { Body, Controller, Post, Req, Res } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { SignUpDTO } from './dtos/signup.dto'
 import { SignInDTO } from './dtos/signin.dto'
@@ -19,7 +19,7 @@ export class AuthController {
     return await this.authService.signIn(signInData, response)
   }
 
-  @Get('/refresh-token')
+  @Post('/refresh-token')
   async refreshToken(
     @Req() request: RequestWithCookies,
     @Res() response: Response,
@@ -27,10 +27,8 @@ export class AuthController {
     return this.authService.refreshToken(request, response)
   }
 
-  @Get('/validate-token')
+  @Post('/validate-token')
   async validateToken(@Req() request: Request, @Res() response: Response) {
-    console.log(request.cookies)
-
     return this.authService.validateAccessToken(
       request.cookies.accessToken,
       response,
