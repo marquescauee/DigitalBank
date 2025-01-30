@@ -13,14 +13,16 @@ import PasswordFeedback from './PasswordFeedback'
 import { authFormSchema } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import RegisterFields from './RegisterFields'
-import axios from 'axios'
+import { handleSignUp } from '@/utils/auth/handleSignUp'
+import { handleSignIn } from '@/utils/auth/handleSignIn'
+import { useRouter } from 'next/navigation'
+import { toast } from 'react-toastify'
+import { login } from '@/routes/auth'
 
-const AuthForm = ({ type }: { type: string }) => {
+const AuthForm = ({ type }: { type: 'sign-up' | 'sign-in' }) => {
   const [user, setUser] = useState<LoginUser | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  // TODO - Toast de erro
-  const [error, setError] = useState<Exception | null>(null)
+  const route = useRouter()
 
   const [passwordValid, setPasswordValid] = useState<boolean>(false)
 
@@ -37,19 +39,63 @@ const AuthForm = ({ type }: { type: string }) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true)
 
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/register`,
-        {
-          values,
-        },
-      )
-    } catch (error) {
-      const errorMessage = error as Exception
-      setError(errorMessage)
-    } finally {
-      setIsLoading(false)
+    if (type === 'sign-up') {
+      const signUp = await handleSignUp({ values })
+
+      if (signUp.error) {
+        console.log(signUp.error)
+        toast.error(signUp.error, {
+          position: 'bottom-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          className: 'custom-toast-error',
+        })
+        setIsLoading(false)
+        return
+      }
+
+      const signIn = await login(values)
+
+      if (signIn.error) {
+        toast.error(signIn.error, {
+          position: 'bottom-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          className: 'custom-toast-error',
+        })
+        setIsLoading(false)
+        route.push('/sign-in')
+        return
+      }
+
+      route.push('/')
     }
+
+    const signIn = await handleSignIn({ values })
+
+    if (signIn.error) {
+      toast.error(signIn.error, {
+        position: 'bottom-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        className: 'custom-toast-error',
+      })
+      setIsLoading(false)
+      return
+    }
+
+    route.push('/')
+
+    setIsLoading(false)
   }
 
   const emailError = form.formState.errors.email
@@ -129,13 +175,15 @@ const AuthForm = ({ type }: { type: string }) => {
                   key="password"
                   autocomplete="current-password"
                 />
-                <PasswordFeedback passwordValidation={passwordValidation} />
+                {type === 'sign-up' && (
+                  <PasswordFeedback passwordValidation={passwordValidation} />
+                )}
               </div>
               <div className="flex flex-col gap-4">
                 <Button
                   type="submit"
                   className="form-btn"
-                  disabled={isLoading || !isFormValid}
+                  disabled={isLoading || (type === 'sign-up' && !isFormValid)}
                 >
                   {isLoading ? (
                     <>

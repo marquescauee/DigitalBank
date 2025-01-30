@@ -213,22 +213,31 @@ export const authFormSchema = (type: string) =>
     address:
       type === 'sign-in'
         ? z.string().optional()
-        : z.string().max(50, {
-            message: 'Address must not have more than 50 characters',
-          }),
+        : z
+            .string()
+            .max(50, {
+              message: 'Address must not have more than 50 characters',
+            })
+            .nonempty({ message: 'Postal code must be filled' }),
     city:
       type === 'sign-in'
         ? z.string().optional()
-        : z.string().max(50, {
-            message: 'City must not have more than 50 characters',
-          }),
+        : z
+            .string()
+            .max(50, {
+              message: 'City must not have more than 50 characters',
+            })
+            .nonempty({ message: 'Postal code must be filled' }),
     state:
       type === 'sign-in'
         ? z.string().optional()
         : z.string().length(2, {
             message: 'State must have exactly 2 characters',
           }),
-    postalCode: type === 'sign-in' ? z.string().optional() : z.string(),
+    postalCode:
+      type === 'sign-in'
+        ? z.string().optional()
+        : z.string().nonempty({ message: 'Postal code must be filled' }),
     dateOfBirth:
       type === 'sign-in'
         ? z.string().optional()
@@ -254,7 +263,10 @@ export const authFormSchema = (type: string) =>
                 message: 'Invalid date',
               },
             ),
-    ssn: type === 'sign-in' ? z.string().optional() : z.string(),
+    ssn:
+      type === 'sign-in'
+        ? z.string().optional()
+        : z.string().nonempty({ message: 'SSN code must be filled' }),
 
     // both
     email: z.string().email(),

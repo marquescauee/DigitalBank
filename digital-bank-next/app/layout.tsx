@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, IBM_Plex_Serif } from 'next/font/google'
 import './globals.css'
+import ToastProvider from '@/contexts/ToastProvider'
 
 const ibmPlexSerif = IBM_Plex_Serif({
   variable: '--font-ibm-plex-serif',
@@ -31,7 +32,7 @@ export default function RootLayout({
       <body
         className={`${ibmPlexSerif.variable} ${inter.variable} antialiased`}
       >
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   )
