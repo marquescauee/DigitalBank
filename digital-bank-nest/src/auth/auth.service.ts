@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -24,7 +23,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signUp(signUpData: SignUpDTO) {
+  async signUp(signUpData: SignUpDTO, response: Response) {
     const emailAlreadyExists = await this.userRepository.findOne({
       where: { email: signUpData.email },
     })
@@ -42,10 +41,9 @@ export class AuthService {
 
     await this.userRepository.save(user)
 
-    return {
-      statusCode: HttpStatus.CREATED,
+    return response.status(HttpStatus.CREATED).json({
       message: 'User created successfully',
-    }
+    })
   }
 
   async signIn(signInData: SignInDTO, response: Response) {
@@ -74,13 +72,6 @@ export class AuthService {
         throw new UnauthorizedException('Refresh token is missing')
       }
 
-      const secretKey = this.configService.get<string>('JWT_SECRET')
-
-      if (!secretKey) {
-        console.error('Environment not configured correctly')
-        throw new InternalServerErrorException()
-      }
-
       const payload: JwtPayload =
         await this.jwtService.verifyAsync(refreshToken)
 
@@ -99,7 +90,6 @@ export class AuthService {
 
       return response.status(HttpStatus.OK).json({
         message: 'Token refreshed successfully',
-        statusCode: HttpStatus.OK,
       })
     } catch (error) {
       console.error(error)
@@ -107,7 +97,7 @@ export class AuthService {
       if (error instanceof UnauthorizedException) {
         return response
           .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: error.message, statusCode: HttpStatus.UNAUTHORIZED })
+          .json({ message: error.message })
       }
 
       if (
@@ -116,7 +106,6 @@ export class AuthService {
       ) {
         return response.status(HttpStatus.UNAUTHORIZED).json({
           message: 'The provided refresh token is malformed.',
-          statusCode: HttpStatus.UNAUTHORIZED,
         })
       }
 
@@ -125,20 +114,17 @@ export class AuthService {
           console.error('Access token validation error:', error.message)
           return response.status(HttpStatus.UNAUTHORIZED).json({
             message: error.message,
-            statusCode: HttpStatus.UNAUTHORIZED,
           })
         }
 
         console.error('Refresh token expired:', error.message)
         return response.status(HttpStatus.UNAUTHORIZED).json({
           message: error.message,
-          statusCode: HttpStatus.UNAUTHORIZED,
         })
       }
 
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'An unexpected error occurred',
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       })
     }
   }
@@ -149,13 +135,6 @@ export class AuthService {
         throw new UnauthorizedException('Access token is missing')
       }
 
-      const secretKey = this.configService.get<string>('JWT_SECRET')
-
-      if (!secretKey) {
-        console.error('Environment not configured correctly')
-        throw new InternalServerErrorException()
-      }
-
       const payload: JwtPayload = await this.jwtService.verifyAsync(accessToken)
 
       if (!payload) {
@@ -164,7 +143,6 @@ export class AuthService {
 
       return response.status(HttpStatus.OK).json({
         message: 'Successfully validated',
-        statusCode: HttpStatus.OK,
       })
     } catch (error) {
       console.error(error)
@@ -172,7 +150,7 @@ export class AuthService {
       if (error instanceof UnauthorizedException) {
         return response
           .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: error.message, statusCode: HttpStatus.UNAUTHORIZED })
+          .json({ message: error.message })
       }
 
       if (
@@ -181,7 +159,6 @@ export class AuthService {
       ) {
         return response.status(HttpStatus.UNAUTHORIZED).json({
           message: 'The provided refresh token is malformed.',
-          statusCode: HttpStatus.UNAUTHORIZED,
         })
       }
 
@@ -189,19 +166,16 @@ export class AuthService {
         if (error.name === 'JsonWebTokenError') {
           return response.status(HttpStatus.UNAUTHORIZED).json({
             message: error.message,
-            statusCode: HttpStatus.UNAUTHORIZED,
           })
         }
 
         return response.status(HttpStatus.UNAUTHORIZED).json({
           message: error.message,
-          statusCode: HttpStatus.UNAUTHORIZED,
         })
       }
 
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'An unexpected error occurred',
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       })
     }
   }
@@ -212,7 +186,6 @@ export class AuthService {
 
     return response.status(HttpStatus.OK).json({
       message: 'user logged out successfully',
-      statusCode: HttpStatus.OK,
     })
   }
 
@@ -236,7 +209,6 @@ export class AuthService {
 
     return response.status(HttpStatus.OK).json({
       message: 'Login Success',
-      statusCode: HttpStatus.OK,
     })
   }
 }

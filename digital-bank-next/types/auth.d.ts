@@ -11,7 +11,7 @@ interface AuthUserData {
   cpf?: string
 }
 
-interface ApiResponse {
+interface AuthApiResponse {
   error?: string
   message?: string
   statusCode: number

@@ -6,12 +6,10 @@ export const handleError = (error: unknown) => {
       (Array.isArray(error.response?.data?.message)
         ? error.response?.data?.message[0]
         : error.response?.data?.message) ?? error.message
-    const errorStatusCode =
-      error.response?.data?.statusCode ?? error.response?.status
 
     return {
       error: errorMessage,
-      statusCode: errorStatusCode,
+      statusCode: error.response?.status!,
     }
   }
 

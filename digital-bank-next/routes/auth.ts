@@ -1,7 +1,9 @@
 import { handleError } from '@/utils/auth/handleError'
 import axios from 'axios'
 
-export const register = async (values: AuthUserData): Promise<ApiResponse> => {
+export const register = async (
+  values: AuthUserData,
+): Promise<AuthApiResponse> => {
   try {
     const updatedValues = {
       ...values,
@@ -17,14 +19,14 @@ export const register = async (values: AuthUserData): Promise<ApiResponse> => {
 
     return {
       message: response.data.message,
-      statusCode: response.data.statusCode,
+      statusCode: response.status,
     }
   } catch (error: unknown) {
     return handleError(error)
   }
 }
 
-export const login = async (values: AuthUserData): Promise<ApiResponse> => {
+export const login = async (values: AuthUserData): Promise<AuthApiResponse> => {
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/sign-in`,
@@ -39,14 +41,14 @@ export const login = async (values: AuthUserData): Promise<ApiResponse> => {
 
     return {
       message: response.data.message,
-      statusCode: response.data.statusCode,
+      statusCode: response.status,
     }
   } catch (error) {
     return handleError(error)
   }
 }
 
-export const validateToken = async (): Promise<ApiResponse> => {
+export const validateToken = async (): Promise<AuthApiResponse> => {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/validate-token`,
@@ -57,14 +59,14 @@ export const validateToken = async (): Promise<ApiResponse> => {
 
     return {
       message: response.data.message,
-      statusCode: response.data.statusCode,
+      statusCode: response.status,
     }
   } catch (error) {
     return handleError(error)
   }
 }
 
-export const refreshToken = async (): Promise<ApiResponse> => {
+export const refreshToken = async (): Promise<AuthApiResponse> => {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/refresh-token`,
@@ -75,14 +77,14 @@ export const refreshToken = async (): Promise<ApiResponse> => {
 
     return {
       message: response.data.message,
-      statusCode: response.data.statusCode,
+      statusCode: response.status,
     }
   } catch (error) {
     return handleError(error)
   }
 }
 
-export const logout = async (): Promise<ApiResponse> => {
+export const logout = async (): Promise<AuthApiResponse> => {
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/logout`,
@@ -93,7 +95,7 @@ export const logout = async (): Promise<ApiResponse> => {
 
     return {
       message: response.data.message,
-      statusCode: response.data.statusCode,
+      statusCode: response.status,
     }
   } catch (error) {
     return handleError(error)

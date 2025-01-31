@@ -358,3 +358,8 @@ declare interface PasswordFeedbackProps {
 declare interface Exception {
   message: string
 }
+
+declare interface ApiError {
+  error: string
+  statusCode: number
+}
