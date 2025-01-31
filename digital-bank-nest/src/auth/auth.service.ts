@@ -88,10 +88,7 @@ export class AuthService {
         throw new UnauthorizedException('Invalid refresh token')
       }
 
-      const accessToken = this.jwtService.sign(
-        { id: payload.id },
-        { expiresIn: '15m' },
-      )
+      const accessToken = this.jwtService.sign({ id: payload.id })
 
       response.cookie('accessToken', accessToken, {
         httpOnly: true,
@@ -220,11 +217,8 @@ export class AuthService {
   }
 
   generateUserTokens(email: string, id: string, response: Response) {
-    const accessToken = this.jwtService.sign(
-      { email, id },
-      { expiresIn: '15m' },
-    )
-    const refreshToken = this.jwtService.sign({ id }, { expiresIn: '1d' })
+    const accessToken = this.jwtService.sign({ email, id })
+    const refreshToken = this.jwtService.sign({ id })
 
     response.cookie('accessToken', accessToken, {
       httpOnly: true,
