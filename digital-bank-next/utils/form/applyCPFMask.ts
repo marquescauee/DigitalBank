@@ -1,4 +1,4 @@
-export const applySSNMask = (value: string, cursorPosition: number) => {
+export const applyCPFMask = (value: string, cursorPosition: number) => {
   const rawValue = value.replace(/\D/g, '')
   const maskedValue = rawValue
     .replace(/^(\d{3})(\d)/, '$1.$2')

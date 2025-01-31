@@ -4,7 +4,7 @@ import { Control } from 'react-hook-form'
 import { z } from 'zod'
 import { authFormSchema } from '@/lib/utils'
 import { applyCepMask } from '@/utils/form/applyPostalCodeMask'
-import { applySSNMask } from '@/utils/form/applySSNMask'
+import { applyCPFMask } from '@/utils/form/applyCPFMask'
 import { applyDateMask } from '@/utils/form/applyDateMask'
 
 const formSchema = authFormSchema('sign-up')
@@ -88,13 +88,13 @@ const RegisterFields = ({ control }: RegisterFieldsProps) => {
         />
         <CustomInput
           control={control}
-          name="ssn"
-          label="Social Security Number"
-          id="ssn"
+          name="cpf"
+          label="CPF"
+          id="cpf"
           inputPlaceholder="Ex: XXX.XXX.XXX-XX"
           type="text"
-          key="ssn"
-          mask={applySSNMask}
+          key="cpf"
+          mask={applyCPFMask}
         />
       </div>
     </>

@@ -82,10 +82,10 @@ export class SignUpDTO {
   @IsString()
   @IsNotEmpty()
   @Length(11, 11, {
-    message: 'SSN must be exactly 11 digits,',
+    message: 'CPF must be exactly 11 digits,',
   })
   @Matches(/^\d+$/, {
-    message: 'SSN must contain only numbers',
+    message: 'CPF must contain only numbers',
   })
-  ssn: string
+  cpf: string
 }

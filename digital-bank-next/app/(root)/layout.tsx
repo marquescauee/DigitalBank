@@ -13,20 +13,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   const loggedInUser: User = {
-    $id: '12345',
+    id: '12345',
     email: 'caue.marques@example.com',
     userId: 'user-001',
-    dwollaCustomerUrl: 'https://api.dwolla.com/customers/12345',
-    dwollaCustomerId: '12345',
     firstName: 'Cauê',
     lastName: 'Marques',
     name: 'Cauê Marques',
-    address1: 'Rua Exemplo, 123',
+    address: 'Rua Exemplo, 123',
     city: 'São Paulo',
     state: 'SP',
     postalCode: '01000-000',
     dateOfBirth: '1990-05-15',
-    ssn: '123-45-6789',
+    cpf: '123-45-6789',
   }
 
   const pathname = usePathname()

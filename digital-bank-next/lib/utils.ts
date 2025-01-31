@@ -263,10 +263,10 @@ export const authFormSchema = (type: string) =>
                 message: 'Invalid date',
               },
             ),
-    ssn:
+    cpf:
       type === 'sign-in'
         ? z.string().optional()
-        : z.string().nonempty({ message: 'SSN code must be filled' }),
+        : z.string().nonempty({ message: 'CPF must be filled' }),
 
     // both
     email: z.string().email(),

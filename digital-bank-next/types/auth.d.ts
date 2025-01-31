@@ -8,7 +8,7 @@ interface AuthUserData {
   state?: string
   postalCode?: string
   dateOfBirth?: string
-  ssn?: string
+  cpf?: string
 }
 
 interface ApiResponse {

@@ -7,7 +7,7 @@ export const register = async (values: AuthUserData): Promise<ApiResponse> => {
       ...values,
       postalCode: values?.postalCode?.replace(/\D/g, '').slice(0, 8),
       dateOfBirth: new Date(values.dateOfBirth ?? '').toISOString(),
-      ssn: values?.ssn?.replace(/\D/g, ''),
+      cpf: values?.cpf?.replace(/\D/g, ''),
     }
 
     const response = await axios.post(

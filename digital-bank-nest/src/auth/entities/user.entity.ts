@@ -33,5 +33,5 @@ export class User {
   dateOfBirth: Date
 
   @Column()
-  ssn: string
+  cpf: string
 }
