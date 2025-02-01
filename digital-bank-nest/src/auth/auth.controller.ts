@@ -4,7 +4,7 @@ import { SignUpDTO } from './dtos/signup.dto'
 import { SignInDTO } from './dtos/signin.dto'
 import { Response } from 'express'
 
-@Controller('/api')
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

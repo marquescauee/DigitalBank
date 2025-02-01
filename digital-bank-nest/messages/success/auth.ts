@@ -1,0 +1,5 @@
+export const userCreatedSuccessfully = 'User created successfully'
+export const tokenRefreshedSuccessfully = 'Token refreshed successfully'
+export const tokenValidatedSuccesfully = 'Successfully validated'
+export const logoutSuccess = 'User logged out successfully'
+export const loginSuccess = 'Login Success'

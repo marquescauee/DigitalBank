@@ -13,7 +13,7 @@ export const register = async (
     }
 
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/sign-up`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/sign-up`,
       updatedValues,
     )
 
@@ -29,7 +29,7 @@ export const register = async (
 export const login = async (values: AuthUserData): Promise<AuthApiResponse> => {
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/sign-in`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/sign-in`,
       {
         email: values.email,
         password: values.password,
@@ -51,7 +51,7 @@ export const login = async (values: AuthUserData): Promise<AuthApiResponse> => {
 export const validateToken = async (): Promise<AuthApiResponse> => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/validate-token`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/validate-token`,
       {
         withCredentials: true,
       },
@@ -69,7 +69,7 @@ export const validateToken = async (): Promise<AuthApiResponse> => {
 export const refreshToken = async (): Promise<AuthApiResponse> => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/refresh-token`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh-token`,
       {
         withCredentials: true,
       },
@@ -87,7 +87,7 @@ export const refreshToken = async (): Promise<AuthApiResponse> => {
 export const logout = async (): Promise<AuthApiResponse> => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/logout`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`,
       {
         withCredentials: true,
       },

@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common'
@@ -10,10 +11,29 @@ import { SignUpDTO } from './dtos/signup.dto'
 import * as bcrypt from 'bcrypt'
 import { HttpStatus } from '@nestjs/common'
 import { SignInDTO } from './dtos/signin.dto'
-import { unauthorizedException } from 'messages/errors/unauthorized'
-import { JsonWebTokenError, JwtService } from '@nestjs/jwt'
+
+import { JwtService } from '@nestjs/jwt'
 import { Response } from 'express'
 import { ConfigService } from '@nestjs/config'
+import {
+  handleDefaultError,
+  handleHttpError,
+  handleJwtError,
+} from 'utils/handleRequestErrors'
+import { emailAlreadyInUse, wrongCredentials } from 'messages/errors/auth'
+import {
+  refreshTokenMissing,
+  invalidRefreshToken,
+  accessTokenMissing,
+  invalidAccessToken,
+} from 'messages/errors/tokens'
+import {
+  userCreatedSuccessfully,
+  tokenRefreshedSuccessfully,
+  tokenValidatedSuccesfully,
+  logoutSuccess,
+  loginSuccess,
+} from 'messages/success/auth'
 
 @Injectable()
 export class AuthService {
@@ -24,44 +44,63 @@ export class AuthService {
   ) {}
 
   async signUp(signUpData: SignUpDTO, response: Response) {
-    const emailAlreadyExists = await this.userRepository.findOne({
-      where: { email: signUpData.email },
-    })
+    try {
+      const emailAlreadyExists = await this.userRepository.findOne({
+        where: { email: signUpData.email },
+      })
 
-    if (emailAlreadyExists) {
-      throw new BadRequestException('Email already in use')
+      if (emailAlreadyExists) {
+        throw new BadRequestException(emailAlreadyInUse)
+      }
+
+      const hashedPassword = bcrypt.hashSync(signUpData.password, 12)
+
+      const user = this.userRepository.create({
+        ...signUpData,
+        password: hashedPassword,
+      })
+
+      await this.userRepository.save(user)
+
+      return response.status(HttpStatus.CREATED).json({
+        message: userCreatedSuccessfully,
+      })
+    } catch (error) {
+      if (error instanceof HttpException) {
+        return handleHttpError(error, response)
+      }
+
+      return handleDefaultError(response)
     }
-
-    const hashedPassword = bcrypt.hashSync(signUpData.password, 12)
-
-    const user = this.userRepository.create({
-      ...signUpData,
-      password: hashedPassword,
-    })
-
-    await this.userRepository.save(user)
-
-    return response.status(HttpStatus.CREATED).json({
-      message: 'User created successfully',
-    })
   }
 
   async signIn(signInData: SignInDTO, response: Response) {
-    const user = await this.userRepository.findOne({
-      where: { email: signInData.email },
-    })
+    try {
+      const user = await this.userRepository.findOne({
+        where: { email: signInData.email },
+      })
 
-    if (!user) {
-      throw new UnauthorizedException(unauthorizedException)
+      if (!user) {
+        throw new UnauthorizedException(wrongCredentials)
+      }
+
+      const passwordMatch = bcrypt.compareSync(
+        signInData.password,
+        user.password,
+      )
+
+      if (!passwordMatch) {
+        throw new UnauthorizedException(wrongCredentials)
+      }
+
+      return this.generateUserTokens(user.email, user.id, response)
+    } catch (error) {
+      if (error instanceof HttpException) {
+        return handleHttpError(error, response)
+      }
+
+      return handleDefaultError(response)
     }
-
-    const passwordMatch = bcrypt.compareSync(signInData.password, user.password)
-
-    if (!passwordMatch) {
-      throw new UnauthorizedException(unauthorizedException)
-    }
-
-    return this.generateUserTokens(user.email, user.id, response)
   }
 
   async refreshToken(request: RequestWithCookies, response: Response) {
@@ -69,14 +108,14 @@ export class AuthService {
       const refreshToken = request.cookies['refreshToken']
 
       if (!refreshToken) {
-        throw new UnauthorizedException('Refresh token is missing')
+        throw new UnauthorizedException(refreshTokenMissing)
       }
 
       const payload: JwtPayload =
         await this.jwtService.verifyAsync(refreshToken)
 
       if (!payload) {
-        throw new UnauthorizedException('Invalid refresh token')
+        throw new UnauthorizedException(invalidRefreshToken)
       }
 
       const accessToken = this.jwtService.sign(
@@ -92,94 +131,46 @@ export class AuthService {
       })
 
       return response.status(HttpStatus.OK).json({
-        message: 'Token refreshed successfully',
+        message: tokenRefreshedSuccessfully,
       })
     } catch (error) {
-      console.error(error)
-
-      if (error instanceof UnauthorizedException) {
-        return response
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: error.message })
-      }
-
-      if (
-        error instanceof JsonWebTokenError &&
-        error.message === 'jwt malformed'
-      ) {
-        return response.status(HttpStatus.UNAUTHORIZED).json({
-          message: 'The provided refresh token is malformed.',
-        })
+      if (error instanceof HttpException) {
+        return handleHttpError(error, response)
       }
 
       if (error instanceof Error) {
-        if (error.name === 'JsonWebTokenError') {
-          console.error('Access token validation error:', error.message)
-          return response.status(HttpStatus.UNAUTHORIZED).json({
-            message: error.message,
-          })
-        }
-
-        console.error('Refresh token expired:', error.message)
-        return response.status(HttpStatus.UNAUTHORIZED).json({
-          message: error.message,
-        })
+        return handleJwtError(error, response)
       }
 
-      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'An unexpected error occurred',
-      })
+      return handleDefaultError(response)
     }
   }
 
   async validateAccessToken(accessToken: string, response: Response) {
     try {
       if (!accessToken) {
-        throw new UnauthorizedException('Access token is missing')
+        throw new UnauthorizedException(accessTokenMissing)
       }
 
       const payload: JwtPayload = await this.jwtService.verifyAsync(accessToken)
 
       if (!payload) {
-        throw new UnauthorizedException('Invalid access token')
+        throw new UnauthorizedException(invalidAccessToken)
       }
 
       return response.status(HttpStatus.OK).json({
-        message: 'Successfully validated',
+        message: tokenValidatedSuccesfully,
       })
     } catch (error) {
-      console.error(error)
-
-      if (error instanceof UnauthorizedException) {
-        return response
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: error.message })
-      }
-
-      if (
-        error instanceof JsonWebTokenError &&
-        error.message === 'jwt malformed'
-      ) {
-        return response.status(HttpStatus.UNAUTHORIZED).json({
-          message: 'The provided refresh token is malformed.',
-        })
+      if (error instanceof HttpException) {
+        return handleHttpError(error, response)
       }
 
       if (error instanceof Error) {
-        if (error.name === 'JsonWebTokenError') {
-          return response.status(HttpStatus.UNAUTHORIZED).json({
-            message: error.message,
-          })
-        }
-
-        return response.status(HttpStatus.UNAUTHORIZED).json({
-          message: error.message,
-        })
+        return handleJwtError(error, response)
       }
 
-      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'An unexpected error occurred',
-      })
+      return handleDefaultError(response)
     }
   }
 
@@ -188,7 +179,7 @@ export class AuthService {
     response.cookie('refreshToken', '', { maxAge: 0 })
 
     return response.status(HttpStatus.OK).json({
-      message: 'user logged out successfully',
+      message: logoutSuccess,
     })
   }
 
@@ -214,7 +205,7 @@ export class AuthService {
     })
 
     return response.status(HttpStatus.OK).json({
-      message: 'Login Success',
+      message: loginSuccess,
     })
   }
 }
