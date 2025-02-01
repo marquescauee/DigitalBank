@@ -1,36 +1,13 @@
-import { formatAmount } from '@/lib/utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import BankCardContent from './BankCardContent'
 
-const BankCard = ({
-  account,
-  userName,
-  showBalance = true,
-}: CreditCardProps) => {
+const BankCard = ({ account, showBalance = true }: CreditCardProps) => {
   return (
     <div className="flex flex-col">
-      <Link href={'/'} className="bank-card">
-        <div className="bank-card_content">
-          <div>
-            <h4 className="text-16 font-semibold text-white">
-              {account.name ?? userName}
-            </h4>
-            <p className="font-ibm-plex-serif font-black text-white">
-              {formatAmount(account.currentBalance)}
-            </p>
-          </div>
-
-          <article className="flex flex-col gap-2">
-            <div className="flex justify-between">
-              <h5 className="text-12 font-semibold text-white">{userName}</h5>
-              <h6 className="text-12 font-semibold text-white">●● / ●●</h6>
-            </div>
-            <p className="text-14 font-semibold tracking-[1.1px] text-white">
-              ●●●● ●●●● ●●●● <span className="text-16">{1234}</span>
-            </p>
-          </article>
-        </div>
+      <Link href={'/dashboard'} className="bank-card">
+        <BankCardContent account={account} />
 
         <div className="bank-card_icon">
           <Image src={'/icons/Paypass.svg'} width={20} height={24} alt="pay" />

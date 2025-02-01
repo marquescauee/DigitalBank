@@ -1,4 +1,4 @@
-import { login, register } from '@/routes/auth'
+import { login } from '@/routes/auth'
 
 type HandleSignInProps = {
   values: AuthUserData

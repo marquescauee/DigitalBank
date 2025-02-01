@@ -73,7 +73,7 @@ const AuthForm = ({ type }: { type: 'sign-up' | 'sign-in' }) => {
         return
       }
 
-      route.push('/')
+      route.push('/dashboard')
     }
 
     const signIn = await handleSignIn({ values })
@@ -92,7 +92,7 @@ const AuthForm = ({ type }: { type: 'sign-up' | 'sign-in' }) => {
       return
     }
 
-    route.push('/')
+    route.push('/dashboard')
 
     setIsLoading(false)
   }
@@ -122,7 +122,10 @@ const AuthForm = ({ type }: { type: 'sign-up' | 'sign-in' }) => {
   return (
     <section className="auth-form">
       <header className="flex flex-col gap-5 md:gap-8">
-        <Link href={'/'} className="flex cursor-pointer items-center gap-1">
+        <Link
+          href={'/dashboard'}
+          className="flex cursor-pointer items-center gap-1"
+        >
           <Image
             src={'/icons/logo.svg'}
             alt="Bank Logo"

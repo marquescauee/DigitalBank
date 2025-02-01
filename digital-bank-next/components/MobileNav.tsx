@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import {
   Sheet,
@@ -12,9 +14,14 @@ import { sidebarLinks } from '@/constants'
 import { cn } from '@/lib/utils'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { usePathname } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
 
-const MobileNav = ({ user }: MobileNavProps) => {
+const MobileNav = () => {
   const pathname = usePathname()
+
+  const { user } = useAuth()
+
+  if (!user) return <></>
 
   return (
     <section className="w-full max-w-[264px]">
@@ -34,7 +41,7 @@ const MobileNav = ({ user }: MobileNavProps) => {
           </VisuallyHidden>
 
           <Link
-            href={'/'}
+            href={'/dashboard'}
             className="flex cursor-pointer items-center gap-1 px-4"
           >
             <Image

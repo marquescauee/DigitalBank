@@ -1,18 +1,25 @@
+'use client'
+
 import { sidebarLinks } from '@/constants'
+import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
 
-const Sidebar = ({ user }: SiderbarProps) => {
+const Sidebar = () => {
+  const { user } = useAuth()
+
   const pathname = usePathname()
+
+  if (!user) return <></>
 
   return (
     <section className="sidebar">
       <nav className="flex flex-col gap-4">
         <Link
-          href={'/'}
+          href={'/dashboard'}
           className="flex mb-12 cursor-pointer items-center gap-2"
         >
           <Image

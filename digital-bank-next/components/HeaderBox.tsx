@@ -1,13 +1,11 @@
 import React from 'react'
+import HeaderBoxTitle from './HeaderBoxTitle'
 
-const HeaderBox = ({ type, title, user, subtext }: HeaderBoxProps) => {
+const HeaderBox = ({ type, subtext }: HeaderBoxProps) => {
   return (
     <div className="header-box">
       <h1 className="header-box-title">
-        {title}
-        {type === 'greeting' && (
-          <span className="text-bankGradient"> {user}!</span>
-        )}
+        {type === 'greeting' && <HeaderBoxTitle />}
         <p className="header-box-subtext">{subtext}</p>
       </h1>
     </div>

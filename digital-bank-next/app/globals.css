@@ -379,6 +379,11 @@
     @apply text-16 font-semibold text-black-2 max-xl:hidden;
   }
 
+  /* HeaderBox Title */
+  .header-box-title {
+    @apply min-h-[30px]
+  }
+
   /* Toast */
   .custom-toast-error {
     background-color: #e74c3c !important;

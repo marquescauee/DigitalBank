@@ -1,20 +1,20 @@
-import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import jwt from 'jsonwebtoken'
+import { publicMiddleware } from './middlewares/publicMiddleware'
+import { privateMiddleware } from './middlewares/privateMiddleware'
 
 export async function middleware(req: NextRequest) {
-  const accessTokenCookie = req.cookies.get('accessToken')?.value
-  const refreshTokenCookie = req.cookies.get('refreshToken')?.value
-  const previousPage = req.headers.get('referer') || '/'
+  const accessToken = req.cookies.get('accessToken')?.value
+  const refreshToken = req.cookies.get('refreshToken')?.value
 
   if (
-    (accessTokenCookie && isTokenValid(accessTokenCookie)) ||
-    (refreshTokenCookie && isTokenValid(refreshTokenCookie))
+    req.nextUrl.pathname === '/sign-in' ||
+    req.nextUrl.pathname === '/sign-up'
   ) {
-    return NextResponse.redirect(new URL(previousPage, req.url))
+    return publicMiddleware(req, isTokenValid, accessToken, refreshToken)
   }
 
-  return NextResponse.next()
+  return privateMiddleware(req, isTokenValid, accessToken, refreshToken)
 }
 
 const isTokenValid = (token: string) => {
@@ -31,5 +31,5 @@ const isTokenValid = (token: string) => {
 }
 
 export const config = {
-  matcher: ['/sign-in', '/sign-up'],
+  matcher: ['/sign-in', '/sign-up', '/dashboard/:path*'],
 }
