@@ -40,28 +40,28 @@ const MobileNav = () => {
             <SheetTitle>Mobile Navigation</SheetTitle>
           </VisuallyHidden>
 
-          <Link
-            href={'/dashboard'}
-            className="flex cursor-pointer items-center gap-1 px-4"
-          >
-            <Image
-              src={'/icons/logo.svg'}
-              alt="Bank Logo"
-              width={34}
-              height={34}
-            />
-            <h1 className="text-26 font-ibm-plex-serif font-bold text-black-1">
-              Digital Bank
-            </h1>
-          </Link>
+          <SheetClose asChild>
+            <Link
+              href={'/dashboard'}
+              className="flex cursor-pointer items-center gap-1 px-4"
+            >
+              <Image
+                src={'/icons/logo.svg'}
+                alt="Bank Logo"
+                width={34}
+                height={34}
+              />
+              <h1 className="text-26 font-ibm-plex-serif font-bold text-black-1">
+                Digital Bank
+              </h1>
+            </Link>
+          </SheetClose>
 
           <div className="mobilenav-sheet">
             <SheetClose asChild>
               <nav className="flex h-full flex-col gap-6 pt-16 text-white">
                 {sidebarLinks.map((link) => {
-                  const isActive =
-                    pathname === link.route ||
-                    pathname.startsWith(`${link.route}/`)
+                  const isActive = pathname === link.route
 
                   return (
                     <SheetClose asChild key={link.route}>
