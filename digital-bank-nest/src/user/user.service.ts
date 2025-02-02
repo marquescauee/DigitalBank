@@ -3,51 +3,34 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Response } from 'express'
-import { accessTokenMissing, invalidAccessToken } from 'messages/errors/tokens'
+import { userNotFound } from 'messages/errors/user'
 import { User } from 'src/auth/entities/user.entity'
 import { Repository } from 'typeorm'
-import {
-  handleHttpError,
-  handleJwtError,
-  handleDefaultError,
-} from 'utils/handleRequestErrors'
+import { handleHttpError, handleDefaultError } from 'utils/handleRequestErrors'
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    private readonly jwtService: JwtService,
   ) {}
 
-  async getUser(accessToken: string, response: Response) {
+  async getUser(tokenId: string, response: Response) {
     try {
-      if (!accessToken) {
-        throw new UnauthorizedException(accessTokenMissing)
-      }
-
-      const { id } = this.jwtService.decode<User>(accessToken)
-
       const user = await this.userRepository.findOne({
-        where: { id },
+        where: { id: tokenId },
       })
 
       if (!user) {
-        throw new BadRequestException(invalidAccessToken)
+        throw new BadRequestException(userNotFound)
       }
 
       return response.status(HttpStatus.OK).json(user)
     } catch (error) {
       if (error instanceof HttpException) {
         return handleHttpError(error, response)
-      }
-
-      if (error instanceof Error) {
-        return handleJwtError(error, response)
       }
 
       return handleDefaultError(response)

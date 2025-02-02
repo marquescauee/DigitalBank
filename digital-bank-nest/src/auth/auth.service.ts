@@ -14,19 +14,12 @@ import { SignInDTO } from './dtos/signin.dto'
 
 import { JwtService } from '@nestjs/jwt'
 import { Response } from 'express'
-import { ConfigService } from '@nestjs/config'
 import {
   handleDefaultError,
   handleHttpError,
   handleJwtError,
 } from 'utils/handleRequestErrors'
 import { emailAlreadyInUse, wrongCredentials } from 'messages/errors/auth'
-import {
-  refreshTokenMissing,
-  invalidRefreshToken,
-  accessTokenMissing,
-  invalidAccessToken,
-} from 'messages/errors/tokens'
 import {
   userCreatedSuccessfully,
   tokenRefreshedSuccessfully,
@@ -39,7 +32,6 @@ import {
 export class AuthService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -53,7 +45,7 @@ export class AuthService {
         throw new BadRequestException(emailAlreadyInUse)
       }
 
-      const hashedPassword = bcrypt.hashSync(signUpData.password, 12)
+      const hashedPassword = await bcrypt.hash(signUpData.password, 12)
 
       const user = this.userRepository.create({
         ...signUpData,
@@ -84,7 +76,7 @@ export class AuthService {
         throw new UnauthorizedException(wrongCredentials)
       }
 
-      const passwordMatch = bcrypt.compareSync(
+      const passwordMatch = await bcrypt.compare(
         signInData.password,
         user.password,
       )
@@ -93,7 +85,7 @@ export class AuthService {
         throw new UnauthorizedException(wrongCredentials)
       }
 
-      return this.generateUserTokens(user.email, user.id, response)
+      return this.generateUserTokens(user.id, response)
     } catch (error) {
       if (error instanceof HttpException) {
         return handleHttpError(error, response)
@@ -103,23 +95,10 @@ export class AuthService {
     }
   }
 
-  async refreshToken(request: RequestWithCookies, response: Response) {
+  async refreshToken(tokenId: string, response: Response) {
     try {
-      const refreshToken = request.cookies['refreshToken']
-
-      if (!refreshToken) {
-        throw new UnauthorizedException(refreshTokenMissing)
-      }
-
-      const payload: JwtPayload =
-        await this.jwtService.verifyAsync(refreshToken)
-
-      if (!payload) {
-        throw new UnauthorizedException(invalidRefreshToken)
-      }
-
-      const accessToken = this.jwtService.sign(
-        { id: payload.id },
+      const accessToken = await this.jwtService.signAsync(
+        { id: tokenId },
         { expiresIn: '15m' },
       )
 
@@ -146,32 +125,10 @@ export class AuthService {
     }
   }
 
-  async validateAccessToken(accessToken: string, response: Response) {
-    try {
-      if (!accessToken) {
-        throw new UnauthorizedException(accessTokenMissing)
-      }
-
-      const payload: JwtPayload = await this.jwtService.verifyAsync(accessToken)
-
-      if (!payload) {
-        throw new UnauthorizedException(invalidAccessToken)
-      }
-
-      return response.status(HttpStatus.OK).json({
-        message: tokenValidatedSuccesfully,
-      })
-    } catch (error) {
-      if (error instanceof HttpException) {
-        return handleHttpError(error, response)
-      }
-
-      if (error instanceof Error) {
-        return handleJwtError(error, response)
-      }
-
-      return handleDefaultError(response)
-    }
+  validateAccessToken(response: Response) {
+    return response.status(HttpStatus.OK).json({
+      message: tokenValidatedSuccesfully,
+    })
   }
 
   logout(response: Response) {
@@ -183,11 +140,8 @@ export class AuthService {
     })
   }
 
-  generateUserTokens(email: string, id: string, response: Response) {
-    const accessToken = this.jwtService.sign(
-      { email, id },
-      { expiresIn: '15m' },
-    )
+  generateUserTokens(id: string, response: Response) {
+    const accessToken = this.jwtService.sign({ id }, { expiresIn: '15m' })
     const refreshToken = this.jwtService.sign({ id }, { expiresIn: '1d' })
 
     response.cookie('accessToken', accessToken, {
