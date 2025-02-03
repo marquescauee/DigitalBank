@@ -274,7 +274,7 @@
 
   /* Auth */
   .auth-asset {
-    @apply flex h-screen w-full sticky top-0 items-center justify-end bg-sky-1 max-lg:hidden;
+    @apply flex h-screen w-full sticky top-0 items-center justify-end bg-authBlue max-lg:hidden;
   }
 
   /* Auth Form */
@@ -339,7 +339,7 @@
 
   /* Footer */
   .footer {
-    @apply flex cursor-pointer items-center justify-between gap-2 py-6;
+    @apply flex cursor-pointer items-center justify-center gap-3 py-6;
   }
 
   .footer_name {
@@ -359,7 +359,7 @@
   }
 
   .footer_image {
-    @apply relative size-5 max-xl:w-full max-xl:flex max-xl:justify-center max-xl:items-center;
+    @apply relative size-5 max-xl:flex max-xl:justify-center max-xl:items-center;
   }
 
   /* Sidebar */

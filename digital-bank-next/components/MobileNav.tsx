@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import Footer from './Footer'
 
 const MobileNav = () => {
   const pathname = usePathname()
@@ -95,7 +96,7 @@ const MobileNav = () => {
                 USER
               </nav>
             </SheetClose>
-            FOOTER
+            <Footer user={user} type="mobile" />
           </div>
         </SheetContent>
       </Sheet>

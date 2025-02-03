@@ -21,6 +21,7 @@ const config = {
     },
     extend: {
       colors: {
+        authBlue: '#abd4fd',
         fill: {
           1: 'rgba(255, 255, 255, 0.10)',
         },
