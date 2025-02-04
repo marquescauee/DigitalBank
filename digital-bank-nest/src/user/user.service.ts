@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { Response } from 'express'
 import { userNotFound } from 'messages/errors/user'
-import { User } from 'src/auth/entities/user.entity'
+import { User } from 'src/user/user.entity'
 import { Repository } from 'typeorm'
 import { handleHttpError, handleDefaultError } from 'utils/handleRequestErrors'
 
