@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Account } from 'src/account/account.entity'
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity('users')
 export class User {
@@ -34,4 +35,7 @@ export class User {
 
   @Column()
   cpf: string
+
+  @OneToMany(() => Account, (account) => account.user)
+  accounts: Account[]
 }
