@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get, Req, Res } from '@nestjs/common'
 import { AccountService } from './account.service'
+import { Response } from 'express'
 
 @Controller('account')
 export class AccountController {
@@ -7,6 +8,14 @@ export class AccountController {
 
   @Get()
   async getAccount() {
-    return this.accountService.getAccount()
+    return await this.accountService.getAccount()
+  }
+
+  @Get('/user-accounts')
+  async getUserAccounts(
+    @Req() request: RequestWithCookies,
+    @Res() response: Response,
+  ) {
+    return await this.accountService.getUserAccounts(request, response)
   }
 }
